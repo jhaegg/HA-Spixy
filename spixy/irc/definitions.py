@@ -1,4 +1,4 @@
-_actions = {}
+_actions = {'PING': 'PING :{timestamp:[0-9]*}'}
 
 actions = _actions.keys()
 
