@@ -1,9 +1,15 @@
-_actions = {'PING': 'PING :{{timestamp:[0-9]*}}'}
+import utils.format_parse as format_parse
 
-actions = _actions.keys()
+_events = {'PING': 'PING :{{timestamp:[0-9]*}}'}
 
-def valid_action(action):
-	return action.upper() in actions
+events = _events.keys()
 
-def parse(str):
-	pass
+def valid_event(event):
+	return event.upper() in events
+
+def parse(string):
+	#  Want to do this with any(map(lambda)) >:|
+	for event, fmt in _events:
+		res = format_parse.parse(fmt, string)
+		if res:
+			return event, res

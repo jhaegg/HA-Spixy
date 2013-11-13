@@ -1,3 +1,5 @@
+import socket
+
 import definitions
 
 
@@ -6,18 +8,26 @@ class Client():
 		self.host = host
 		self.port = port
 		self.user = user
-		self.listeners = {action: [] for action in definitions.actions}
+		self.listeners = {event: [] for event in definitions.events}
 
 	def connect(self):
 		self.register_listener('PING', self._pong)
+		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.socket.connect((self.host, self.port))
+		self._send_raw('NICK %s' % self.user)
+		# Spawn gevent coroutine for handling events
+		
 
-	def register_listener(self, action, listener):
-		if definitions.valid_action(action):
-			self.listeners[action] += listener
+	def register_listener(self, event, listener):
+		if definitions.valid_event(event):
+			self.listeners[event].append(listener)
 		else:
-			raise TypeError('Invalid IRC action %s.' % action)
+			raise TypeError('Invalid IRC event %s.' % event)
+
+	def _send_raw(self, string):
+		self.socket.sendall('%s\n' % string)
 
 	#  Default event handlers
 
 	def _pong(self, timestamp):
-		self._send_raw('PONG :%d' % timestamp)
+		self._send_raw('PONG %d' % timestamp)
