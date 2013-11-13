@@ -1,6 +1,6 @@
 import re
 
-_format_pattern = "(\{\{([A-Za-z0-9]+):(.*)\}\})"
+_format_pattern = "(\{\{([A-Za-z0-9]+):([^\}\}]*)\}\})"
 
 def parse(format, string):
 	# Get all {{entry: regex}}

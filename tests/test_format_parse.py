@@ -24,3 +24,23 @@ class TestFormatParse(unittest.TestCase):
 
 		for result, expected in zip(results, expecteds):
 			self.assertEqual(result, expected)
+
+	def test_format_two(self):
+		format = 'Spam {{spam:sp[aA]*m}} and {{egg:e[e|g]*ggs}}'
+		tests = [
+			'Spam spam and eggs',
+			'Spam spAm with eeggs',
+			'Spam spAam and spam',
+		]
+
+		expecteds = [
+			{'spam': 'spam', 'egg': 'eggs'},
+			{},
+			{},
+		]
+
+		results = [format_parse.parse(format, test) for test in tests]
+
+		for result, expected in zip(results, expecteds):
+			self.assertEqual(result, expected)
+
