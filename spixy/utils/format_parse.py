@@ -21,4 +21,4 @@ def parse(format, string):
 	if match:
 		return {k: match.group(g) for g, k in res.items()}
 	else:
-		return {}
+		return None

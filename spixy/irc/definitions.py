@@ -8,8 +8,9 @@ def valid_event(event):
 	return event.upper() in events
 
 def parse(string):
-	#  Want to do this with any(map(lambda)) >:|
-	for event, fmt in _events:
+	for event, fmt in _events.items():
 		res = format_parse.parse(fmt, string)
-		if res:
+		if res is not None:
 			return event, res
+
+	return None, None

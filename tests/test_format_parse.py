@@ -16,8 +16,8 @@ class TestFormatParse(unittest.TestCase):
 			{'spam': 'spam'},
 			{'spam': 'spAm'},
 			{'spam': 'spAam'},
-			{},
-			{}
+			None,
+			None
 		]
 
 		results = [format_parse.parse(format, test) for test in tests]
@@ -35,12 +35,11 @@ class TestFormatParse(unittest.TestCase):
 
 		expecteds = [
 			{'spam': 'spam', 'egg': 'eggs'},
-			{},
-			{},
+			None,
+			None
 		]
 
 		results = [format_parse.parse(format, test) for test in tests]
 
 		for result, expected in zip(results, expecteds):
 			self.assertEqual(result, expected)
-
