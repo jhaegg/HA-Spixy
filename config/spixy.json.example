@@ -1,0 +1,5 @@
+{
+	"host": "irc.example.com",
+	"port": 6669,
+	"user": "Spixy"
+}

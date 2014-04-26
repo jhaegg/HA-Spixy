@@ -50,13 +50,13 @@ class Client():
 		self.event_handler.start()
 
 	def close():
-		if hasattr(self, 'event_handler'):
-			self.event_handler.close()
-			self.event_handler.join()
-
 		if hasattr(self, 'socket'):
 			self._send_raw('QUIT :exiting')
 			self.socket.close()
+
+		if hasattr(self, 'event_handler'):
+			self.event_handler.close()
+			self.event_handler.join()
 
 	def register_listener(self, event, listener):
 		if definitions.valid_event(event):
