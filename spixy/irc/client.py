@@ -24,7 +24,8 @@ class EventHandler(Greenlet):
 			if event is None:
 				logger.Error('Unparsable event %s' % message)
 			else:
-				map(self.client.listeners[event], **event)
+				for self.client.listeners[event] as listener:
+					listener(**parameters)
 
 	def close(self):
 		self.shutdown = True
