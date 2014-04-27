@@ -1,4 +1,4 @@
-import utils.format_parse as format_parse
+import spixy.utils.format_parse as format_parse
 
 _events = {'PING': 'PING :{{timestamp:[0-9]*}}'}
 

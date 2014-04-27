@@ -1,21 +1,17 @@
-from gevent.monkey import patch_all
-patch_all()
-
-from gevent import Greenlet
-
 from json import load
+from threading import Thread
 
-from irc.client import Client
+from spixy.irc.client import Client
 
-class RawSender(Greenlet):
+class RawSender(Thread):
 	def __init__(self, client):
-		Greenlet.__init__(self)
+		Thread.__init__(self)
 		self.client = client
 
-	def _run(self):
+	def run(self):
 		command = ''
 		while command != '/quit':
-			command = input_raw('>:')
+			command = input('>:')
 			client._send_raw(command)
 
 

@@ -2,6 +2,7 @@ import re
 
 _format_pattern = "(\{\{([A-Za-z0-9]+):([^\}\}]*)\}\})"
 
+# TODO: Implement type support
 def parse(format, string):
 	# Get all {{entry: regex}}
 	res = {}
