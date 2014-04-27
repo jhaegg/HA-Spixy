@@ -20,7 +20,7 @@ class RawSender(Greenlet):
 
 
 if __name__ == '__main__':
-	with open('config/spixy.json') as:
+	with open('config/spixy.json') as f:
 		config = load(f)
 
 	client = Client(**config)

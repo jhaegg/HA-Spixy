@@ -19,10 +19,11 @@ class EventHandler(Greenlet):
 	def _run(self):
 		while(not self.shutdown):
 			message = self.client.socket.recv(4096)
+			logger.info("Message: %s" % message)
 			event, parameters = parse(message)
 
 			if event is None:
-				logger.Error('Unparsable event %s' % message)
+				logger.error("Unparsable message %s" % message)
 			else:
 				for self.client.listeners[event] as listener:
 					listener(**parameters)
@@ -32,10 +33,12 @@ class EventHandler(Greenlet):
 
 
 class Client():
-	def __init__(self, host, user, port=6669):
+	def __init__(self, host, port=6669, user, nick, name):
 		self.host = host
 		self.port = port
 		self.user = user
+		self.nick = nick
+		self.name = name
 		self.listeners = {event: [] for event in definitions.events}
 
 	def __repr__(self):
@@ -46,12 +49,13 @@ class Client():
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.connect((self.host, self.port))
 		self._send_raw('NICK %s' % self.user)
+		self._send_raw('USER %s 0 * :%s' % (self.nick, self.name))
 		self.event_handler = EventHandler(self)
 		self.event_handler.start()
 
 	def close():
 		if hasattr(self, 'socket'):
-			self._send_raw('QUIT :exiting')
+			self._send_raw('QUIT :Exiting')
 			self.socket.close()
 
 		if hasattr(self, 'event_handler'):
