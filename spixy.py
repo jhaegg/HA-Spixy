@@ -12,14 +12,18 @@ class RawSender(Thread):
 		command = ''
 		while command != '/quit':
 			command = input('>:')
-			client._send_raw(command)
+			if command != '/quit':
+				client._send_raw(command)
 
+def print_server_notice(host, target, message):
+	print(host, target, message)
 
 if __name__ == '__main__':
 	with open('config/spixy.json') as f:
 		config = load(f)
 
 	client = Client(**config)
+	client.register_listener('SERVER_NOTICE', print_server_notice)
 	console = RawSender(client)
 	client.connect()
 	console.start()

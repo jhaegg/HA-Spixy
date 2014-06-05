@@ -1,6 +1,9 @@
 import spixy.utils.format_parse as format_parse
 
-_events = {'PING': 'PING :{{timestamp:[0-9]*}}'}
+_host = "{{host:[0-9a-zA-Z\.\-:]+}}"
+
+_events = {'PING': "PING :{{timestamp:[0-9]+}}",
+           'SERVER_NOTICE': ":" + _host  + " NOTICE {{target:[0-9a-zA-Z\-]+}} :{{message:.*}}"}
 
 events = _events.keys()
 
