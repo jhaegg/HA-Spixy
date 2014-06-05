@@ -35,16 +35,14 @@ class EventHandler(Thread):
 				if datalen != decoded:
 					logger.warning('Not all bytes decoded: %r' % data)
 
-				message = message.rstrip()
+				for line in [l.strip() for l in message.split('\n') if l]:
+					event, parameters = parse(line)
 
-				logger.info("Message: %r" % message)
-				event, parameters = parse(message)
-
-				if event is None:
-					logger.error("Unparsable message %s" % message)
-				else:
-					for listener in self.client.listeners[event]:
-						listener(**parameters)
+					if event is None:
+						logger.error("Could not parse %r" % line)
+					else:
+						for listener in self.client.listeners[event]:
+							listener(**parameters)
 			else:
 				sleep(0.5)
 
