@@ -22,11 +22,11 @@ class TestFormatParse(unittest.TestCase):
 
 		results = [format_parse.parse(format, test) for test in tests]
 
-		for result, expected in zip(results, expecteds):
-			self.assertEqual(result, expected)
+		for expected, result in zip(expecteds, results):
+			self.assertEqual(expected, result)
 
 	def test_format_two(self):
-		format = 'Spam {{spam:sp[aA]*m}} and {{egg:e[e|g]*ggs}}'
+		format = 'Spam {{spam:sp[aA]*m}} and {{egg:e[g]{2}s}}'
 		tests = [
 			'Spam spam and eggs',
 			'Spam spAm with eeggs',
@@ -41,5 +41,5 @@ class TestFormatParse(unittest.TestCase):
 
 		results = [format_parse.parse(format, test) for test in tests]
 
-		for result, expected in zip(results, expecteds):
-			self.assertEqual(result, expected)
+		for expected, result in zip(expecteds, results):
+			self.assertEqual(expected, result)
