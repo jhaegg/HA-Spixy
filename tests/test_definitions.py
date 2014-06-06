@@ -18,15 +18,21 @@ class TestDefinitions(unittest.TestCase):
 		for result, expected in zip(results, expecteds):
 			self.assertEqual(result, expected)
 
-	def test_server_notice(self):
+	def test_notice(self):
 		tests = [
-			':irc.example.com NOTICE AUTH :*** Looking up your hostname...'
+			':irc.example.com NOTICE AUTH :*** Looking up your hostname...',
+            ':Vargpack!vargpack@feed:babe:dead:beef NOTICE #chan :wololo'
 		]
 
 		expecteds = [
 			('SERVER_NOTICE', {'target': "AUTH",
                                'host': "irc.example.com",
-                               'message': "*** Looking up your hostname..."})
+                               'message': "*** Looking up your hostname..."}),
+            ('NOTICE', {'target': '#chan',
+                        'nick': 'Vargpack',
+                        'ident': 'vargpack',
+                        'host': 'feed:babe:dead:beef',
+                        'message': 'wololo'})
 		]
 
 		results = map(parse, tests)
