@@ -10,13 +10,16 @@ _fulluser = _nick + "!" + _ident + "@" + _host
 _message_part = " :{{message:.*}}"
 
 _events = {'PING': "PING :{{timestamp:[0-9]+}}",
-           'SERVER_NOTICE': ":" + _host  + " NOTICE " + _target + _message_part,
-           'NOTICE': ":" + _fulluser + " NOTICE " + _target + _message_part}
+           'SERVER_NOTICE': ":" + _host + " NOTICE " + _target + _message_part,
+           'NOTICE': ":" + _fulluser + " NOTICE " + _target + _message_part,
+           'REPLY': ":" + _host + " {{code:[0-9]{2}[0-9]}} " + _target + _message_part}
 
 events = _events.keys()
 
+
 def valid_event(event):
     return event.upper() in events
+
 
 def parse(string):
     for event, fmt in _events.items():

@@ -1,6 +1,7 @@
 import unittest
 import spixy.utils.format_parse as format_parse
 
+
 class TestFormatParse(unittest.TestCase):
     def test_format_single(self):
         format = 'Spam {{spam:sp[aA]*m}}'

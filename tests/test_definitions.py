@@ -1,6 +1,7 @@
 import unittest
 from spixy.irc.definitions import parse
 
+
 class TestDefinitions(unittest.TestCase):
     def test_ping(self):
         tests = [
@@ -33,6 +34,23 @@ class TestDefinitions(unittest.TestCase):
                         'ident': 'vargpack',
                         'host': 'feed:babe:dead:beef',
                         'message': 'wololo'})
+        ]
+
+        results = map(parse, tests)
+
+        for expected, result in zip(expecteds, results):
+            self.assertEqual(expected, result)
+
+    def test_reply(self):
+        tests = [
+            ':irc.example.com 001 User :Welcome to the IRC test User'
+        ]
+
+        expecteds = [
+            ('REPLY', {'target': "User",
+                       'host': "irc.example.com",
+                       'code': "001",
+                       'message': "Welcome to the IRC test User"})
         ]
 
         results = map(parse, tests)

@@ -23,7 +23,7 @@ class EventHandler(Thread):
         utf8decoder = getdecoder('utf-8')
         latin1decoder = getdecoder('latin-1')
 
-        while(not self.shutdown):
+        while (not self.shutdown):
             data = self.client.socket.recv(4096)
             datalen = len(data)
             if datalen > 0:
@@ -65,11 +65,9 @@ class Client():
 
     def connect(self):
         self.register_listener('PING', self._pong)
+        self.register_listener('SERVER_NOTICE', self._auth_login)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
-        self._send_raw('PASS')
-        self._send_raw('NICK %s' % self.nick)
-        self._send_raw('USER %s 0 * :%s' % (self.user, self.name))
         self.event_handler = EventHandler(self)
         self.event_handler.start()
 
@@ -88,10 +86,22 @@ class Client():
         else:
             raise TypeError('Invalid IRC event %s.' % event)
 
+    def remove_listener(self, event, listener):
+        if valid_event(event):
+            self.listeners[event].remove(listener)
+        else:
+            raise TypeError('Invalid IRC event %s.' % event)
+
     def _send_raw(self, string):
         self.socket.sendall(str.encode('%s\r\n' % string))
 
-    #  Default event handlers
+    # Default event handlers
 
     def _pong(self, timestamp):
         self._send_raw('PONG %s' % timestamp)
+
+    def _auth_login(self, target, **kwargs):
+        if target == 'AUTH':
+            self._send_raw('NICK %s' % self.nick)
+            self._send_raw('USER %s 0 * :%s' % (self.user, self.name))
+            self.remove_listener('SERVER_NOTICE', self._auth_login)
