@@ -1,12 +1,17 @@
 import spixy.utils.format_parse as format_parse
 
 _host = "{{host:[0-9a-zA-Z\.\-:]+}}"
-_fulluser = "{{nick:[0-9a-zA-Z]+}}!{{ident:[0-9a-zA-Z]+}}@" + _host
-
+_nick_valid = "0-9a-zA-Z\-"
+_chan_valid = "#\%"
+_nick = "{{nick:[" + _nick_valid + "]+}}"
+_target = "{{target:[" + _nick_valid + _chan_valid + "]+}}"
+_ident = "{{ident:[0-9a-zA-Z]+}}"
+_fulluser = _nick + "!" + _ident + "@" + _host
+_message_part = " :{{message:.*}}"
 
 _events = {'PING': "PING :{{timestamp:[0-9]+}}",
-           'SERVER_NOTICE': ":" + _host  + " NOTICE {{target:[0-9a-zA-Z\-]+}} :{{message:.*}}",
-           'NOTICE': ":" + _fulluser + " NOTICE {{target:[#0-9a-zA-Z\-]+}} :{{message:.*}}"}
+           'SERVER_NOTICE': ":" + _host  + " NOTICE " + _target + _message_part,
+           'NOTICE': ":" + _fulluser + " NOTICE " + _target + _message_part}
 
 events = _events.keys()
 
