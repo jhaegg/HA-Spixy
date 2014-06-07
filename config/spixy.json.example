@@ -1,7 +1,10 @@
 {
-	"host": "irc.example.com",
-	"port": 6669,
-	"user": "Spixy"
-	"nick": "HA-Spixy",
-	"name": "High Availibility Spixy"
+    "server": {
+        "host": "irc.example.com",
+        "port": 6669,
+        "user": "Spixy"
+        "nick": "HA-Spixy",
+        "name": "High Availibility Spixy"
+    },
+	"autojoin": ["#example", "#chan"]
 }
