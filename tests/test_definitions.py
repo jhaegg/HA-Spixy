@@ -11,7 +11,7 @@ class TestDefinitions(unittest.TestCase):
 
         expecteds = [
             ('PING', {'timestamp': '123'}),
-            (None, None)
+            ('PING', {'timestamp': 'abc'})
         ]
 
         results = map(parse, tests)

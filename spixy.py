@@ -2,6 +2,7 @@ from json import load
 from threading import Thread
 
 from spixy.irc.client import Client
+from spixy.plugins.decision import DecisionPlugin
 
 class RawSender(Thread):
     def __init__(self, client):
@@ -31,6 +32,8 @@ if __name__ == '__main__':
     client.register_listener('REPLY', join_on_connect(config))
     console = RawSender(client)
     client.connect()
+    decision = DecisionPlugin(client)
     console.start()
     console.join()
+    decision.close()
     client.close()
