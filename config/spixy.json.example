@@ -8,6 +8,9 @@
     },
 	"autojoin": ["#example", "#chan"],
 	"DecisionPlugin": {
-	    "choices": ["Yes", "No"]
+	    "trigger": "%d",
+	    "choices": ["Yes", "No"],
+	    "indicator": " or ",
+	    "separators": [",", " or "]
 	}
 }
