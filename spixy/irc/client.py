@@ -95,6 +95,11 @@ class Client():
     def _send_raw(self, string):
         self.socket.sendall(str.encode('%s\r\n' % string))
 
+    # IRC messages
+
+    def privmsg(self, target, message):
+        self._send_raw("PRIVMSG {target} :{message}".format(target=target, message=message))
+
     # Default event handlers
 
     def _pong(self, timestamp):

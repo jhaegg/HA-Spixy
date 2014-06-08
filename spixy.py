@@ -32,7 +32,7 @@ if __name__ == '__main__':
     client.register_listener('REPLY', join_on_connect(config))
     console = RawSender(client)
     client.connect()
-    decision = DecisionPlugin(client)
+    decision = DecisionPlugin(config, client)
     console.start()
     console.join()
     decision.close()

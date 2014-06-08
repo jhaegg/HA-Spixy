@@ -4,10 +4,10 @@ from .plugin import Plugin
 
 
 class DecisionPlugin(Plugin):
-    def __init__(self, client):
+    def __init__(self, config, client):
         client.register_listener("PRIVMSG", self._handle_decision)
         self._client = client
-        super(DecisionPlugin, self).__init__()
+        super(DecisionPlugin, self).__init__(config)
 
     def _handle_decision(self, nick, target, message, **rest):
         if message.startswith('%d'):
@@ -15,6 +15,7 @@ class DecisionPlugin(Plugin):
 
     def _handle_command(self, command):
         if command['target'].startswith("#"):
-            self._client._send_raw('PRIVMSG {target} :{nick}: {answer}'.format(answer=choice(['Yes', 'No']), **command))
+            self._client.privmsg(target=command['target'],
+                                 message="{nick}: {answer}".format(answer=choice(self._config['choices']), **command))
         else:
-            self._client._send_raw('PRIVMSG {nick} :{answer}'.format(answer=choice(['Yes', 'No']), **command))
+            self._client.privmsg(target=command['nick'], message=choice(self._config['choices']))

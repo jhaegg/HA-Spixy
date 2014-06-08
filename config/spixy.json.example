@@ -6,5 +6,8 @@
         "nick": "HA-Spixy",
         "name": "High Availibility Spixy"
     },
-	"autojoin": ["#example", "#chan"]
+	"autojoin": ["#example", "#chan"],
+	"DecisionPlugin": {
+	    "choices": ["Yes", "No"]
+	}
 }

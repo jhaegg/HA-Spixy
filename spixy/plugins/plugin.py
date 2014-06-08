@@ -6,8 +6,9 @@ _MagicQuit = 0x00ff00ff
 
 
 class Plugin(Thread):
-    def __init__(self):
+    def __init__(self, config):
         self._command_channel = deque()
+        self._config = config[self.__class__.__name__]
         super(Plugin, self).__init__()
         self.start()
 
