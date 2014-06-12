@@ -22,7 +22,8 @@ class TestDefinitions(unittest.TestCase):
     def test_notice(self):
         tests = [
             ':irc.example.com NOTICE AUTH :*** Looking up your hostname...',
-            ':Vargpack!vargpack@feed:babe:dead:beef NOTICE #chan :wololo'
+            ':Vargpack!vargpack@feed:babe:dead:beef NOTICE #chan :wololo',
+            'NOTICE AUTH :*** Looking up your hostname'
         ]
 
         expecteds = [
@@ -33,7 +34,9 @@ class TestDefinitions(unittest.TestCase):
                         'nick': 'Vargpack',
                         'ident': 'vargpack',
                         'host': 'feed:babe:dead:beef',
-                        'message': 'wololo'})
+                        'message': 'wololo'}),
+            ('BLANK_NOTICE', {'target': "AUTH",
+                              'message': "*** Looking up your hostname"}),
         ]
 
         results = map(parse, tests)

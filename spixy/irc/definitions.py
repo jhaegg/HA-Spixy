@@ -11,6 +11,7 @@ _message_part = " :{{message:.*}}"
 
 _events = {'PING': "PING :{{timestamp:[0-9a-zA-Z\.\-:]+}}",
            'SERVER_NOTICE': ":" + _host + " NOTICE " + _target + _message_part,
+           'BLANK_NOTICE': "NOTICE " + _target + _message_part,
            'NOTICE': ":" + _fulluser + " NOTICE " + _target + _message_part,
            'REPLY': ":" + _host + " {{code:[0-9]{2}[0-9]}} " + _target + _message_part,
            'PRIVMSG': ":" + _fulluser + " PRIVMSG " + _target + _message_part}

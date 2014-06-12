@@ -66,6 +66,7 @@ class Client():
     def connect(self):
         self.register_listener('PING', self._pong)
         self.register_listener('SERVER_NOTICE', self._auth_login)
+        self.register_listener('BLANK_NOTICE', self._auth_login)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
         self.event_handler = EventHandler(self)
