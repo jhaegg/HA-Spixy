@@ -111,3 +111,4 @@ class Client():
             self._send_raw('NICK %s' % self.nick)
             self._send_raw('USER %s 0 * :%s' % (self.user, self.name))
             self.remove_listener('SERVER_NOTICE', self._auth_login)
+            self.remove_listener('BLANK_NOTICE', self._auth_login)
