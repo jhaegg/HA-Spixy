@@ -1,7 +1,7 @@
 import spixy.utils.format_parse as format_parse
 
 _host = "{{host:[0-9a-zA-Z\.\-:]+}}"
-_nick_valid = "0-9a-zA-Z\-"
+_nick_valid = "0-9a-zA-Z\-_´`"
 _chan_valid = "#\%"
 _nick = "{{nick:[" + _nick_valid + "]+}}"
 _target = "{{target:[" + _nick_valid + _chan_valid + "]+}}"
