@@ -1,4 +1,5 @@
 from .plugin import Plugin
+from datetime import date
 
 
 class FridayPlugin(Plugin):
@@ -14,6 +15,13 @@ class FridayPlugin(Plugin):
     def _handle_command(self, command):
         if command['target'].startswith("#"):
             self._client.privmsg(target=command['target'],
-                                 message="{nick}: Yes, it's Friday!".format(**command))
+                                 message="{nick}: {response}".format(response=self._get_response(), **command))
         else:
-            self._client.privmsg(target=command['nick'], message="Yes, it's Friday!")
+            self._client.privmsg(target=command['nick'], message=self._get_response())
+
+    def _get_response(self):
+        today = date.today().strftime('%A')
+        if today == 'Friday':
+            return "Yes, it's {today}!".format(today=today)
+        else:
+            return "No, it's {today}.".format(today=today)
