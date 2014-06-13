@@ -3,6 +3,7 @@ from threading import Thread
 
 from spixy.irc.client import Client
 from spixy.plugins.decision import DecisionPlugin
+from spixy.plugins.friday import FridayPlugin
 
 class RawSender(Thread):
     def __init__(self, client):
@@ -33,7 +34,9 @@ if __name__ == '__main__':
     console = RawSender(client)
     client.connect()
     decision = DecisionPlugin(config, client)
+    friday = FridayPlugin(config, client)
     console.start()
     console.join()
     decision.close()
+    friday.close()
     client.close()

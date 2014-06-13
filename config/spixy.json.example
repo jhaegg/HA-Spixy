@@ -12,5 +12,8 @@
 	    "choices": ["Yes", "No"],
 	    "indicator": " or ",
 	    "separators": [",", " or "]
-	}
+	},
+    "FridayPlugin": {
+        "trigger": "%isitfriday?"
+    }
 }
