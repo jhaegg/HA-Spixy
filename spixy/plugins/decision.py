@@ -23,7 +23,7 @@ class DecisionPlugin(Plugin):
 
         if command['target'].startswith("#"):
             self._client.privmsg(target=command['target'],
-                                 message="{nick}: {answer}".format(answer=answer), **command)
+                                 message="{nick}: {answer}".format(answer=answer, **command))
         else:
             self._client.privmsg(target=command['nick'], message=answer)
 
