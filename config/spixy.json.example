@@ -2,7 +2,7 @@
     "server": {
         "host": "irc.example.com",
         "port": 6669,
-        "user": "Spixy"
+        "user": "Spixy",
         "nick": "HA-Spixy",
         "name": "High Availibility Spixy"
     },
