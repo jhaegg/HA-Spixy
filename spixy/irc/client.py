@@ -42,7 +42,10 @@ class EventHandler(Thread):
                         logger.error("Could not parse %r" % line)
                     else:
                         for listener in self.client.listeners[event]:
-                            listener(**parameters)
+                            try:
+                                listener(**parameters)
+                            except:
+                                logger.exception("Uncaught exception in event listener on message:\n%s" % line)
             else:
                 sleep(0.5)
 
