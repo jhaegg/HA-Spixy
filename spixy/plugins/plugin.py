@@ -51,7 +51,11 @@ class Plugin(Thread):
                     self._cleanup()
                     break
 
-                self._handle_command(command)
+                try:
+                    self._handle_command(command)
+                except:
+                    self._logger.exception("Uncaugh exception handling command:\n%r" % command)
+
             except IndexError:
                 sleep(0.5)
 
