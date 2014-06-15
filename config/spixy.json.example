@@ -15,5 +15,8 @@
 	},
     "FridayPlugin": {
         "trigger": "%isitfriday?"
+    },
+    "TitlePlugin": {
+        "trigger": "%t"
     }
 }

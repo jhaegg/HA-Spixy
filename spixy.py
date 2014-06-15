@@ -4,6 +4,8 @@ from threading import Thread
 from spixy.irc.client import Client
 from spixy.plugins.decision import DecisionPlugin
 from spixy.plugins.friday import FridayPlugin
+from spixy.plugins.title import TitlePlugin
+
 
 class RawSender(Thread):
     def __init__(self, client):
@@ -16,6 +18,7 @@ class RawSender(Thread):
             command = input('>:')
             if command != '/quit':
                 client._send_raw(command)
+
 
 def join_on_connect(config):
     def wrapped(host, code, target, message):
@@ -35,8 +38,10 @@ if __name__ == '__main__':
     client.connect()
     decision = DecisionPlugin(config, client)
     friday = FridayPlugin(config, client)
+    title = TitlePlugin(config, client)
     console.start()
     console.join()
     decision.close()
     friday.close()
+    title.close()
     client.close()
