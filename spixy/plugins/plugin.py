@@ -54,7 +54,7 @@ class Plugin(Thread):
                 try:
                     self._handle_command(command)
                 except:
-                    self._logger.exception("Uncaugh exception handling command:\n%r" % command)
+                    self._logger.exception("Uncaught exception handling command:\n%r" % command)
 
             except IndexError:
                 sleep(0.5)
