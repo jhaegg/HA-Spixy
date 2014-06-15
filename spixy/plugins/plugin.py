@@ -31,7 +31,7 @@ class Plugin(Thread):
         try:
             with open(filename, 'rb') as f:
                 self._store = load(f)
-        except IOError:
+        except (IOError, EOFError):
             self._logger.exception("Could not open %s for reading, no persistent data loaded." % filename)
             self._store = {}
         except UnpicklingError:
@@ -66,7 +66,7 @@ class Plugin(Thread):
         filename = self.__class__.__name__ + ".pickle"
         try:
             with open(filename, 'wb') as f:
-                dump(f, self._store)
+                dump(self._store, f)
         except IOError:
             self._logger.exception("Could not open %s for writing, persistent data not saved." % filename)
         except PicklingError:
