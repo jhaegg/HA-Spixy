@@ -5,6 +5,7 @@ from spixy.irc.client import Client
 from spixy.plugins.decision import DecisionPlugin
 from spixy.plugins.friday import FridayPlugin
 from spixy.plugins.title import TitlePlugin
+from spixy.plugins.oldurl import OldUrlPlugin
 
 
 class RawSender(Thread):
@@ -39,9 +40,11 @@ if __name__ == '__main__':
     decision = DecisionPlugin(config, client)
     friday = FridayPlugin(config, client)
     title = TitlePlugin(config, client)
+    oldurl = OldUrlPlugin(config, client)
     console.start()
     console.join()
     decision.close()
     friday.close()
     title.close()
+    oldurl.close()
     client.close()
