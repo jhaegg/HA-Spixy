@@ -28,11 +28,14 @@ class DecisionPlugin(Plugin):
             self._client.privmsg(target=command['nick'], message=answer)
 
     def _partition(self, message):
+        if self._config['indicator'] not in message:
+            return [message]
+
         parts = [message[len(self._config['trigger']):]]
         for separator in self._config['separators']:
             new_parts = set()
             for part in parts:
-                [new_parts.add(s.strip()) for s in part.split(separator)]
+                [new_parts.add(s.strip().strip('?')) for s in part.split(separator)]
 
             parts = new_parts
 
