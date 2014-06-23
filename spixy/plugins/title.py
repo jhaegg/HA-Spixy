@@ -1,6 +1,7 @@
 from .plugin import Plugin
 
 from re import compile, IGNORECASE
+from html import unescape
 
 from requests_futures.sessions import FuturesSession
 from requests.exceptions import RequestException
@@ -66,7 +67,7 @@ class TitlePlugin(Plugin):
 
             try:
                 title = self._title_match.search(response.text).group(1)
-                self._pages[page] = title
+                self._pages[page] = unescape(title)
                 self._send_title(prefix, target, page, title, multiple)
                 return
             except IndexError:
