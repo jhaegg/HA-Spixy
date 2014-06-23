@@ -70,7 +70,7 @@ class TitlePlugin(Plugin):
                 self._pages[page] = unescape(title)
                 self._send_title(prefix, target, page, title, multiple)
                 return
-            except IndexError:
+            except AttributeError:
                 self._pages[page] = "Error, no title found."
                 self._send_title(prefix, target, page, self._pages[page], multiple)
 
