@@ -5,7 +5,7 @@ _nick_valid = "0-9a-zA-Z\-_´`"
 _chan_valid = "#\%"
 _nick = "{{nick:[" + _nick_valid + "]+}}"
 _target = "{{target:[" + _nick_valid + _chan_valid + "]+}}"
-_ident = "{{ident:~?[0-9a-zA-Z]+}}"
+_ident = "{{ident:~?[0-9a-zA-Z\.]+}}"
 _fulluser = _nick + "!" + _ident + "@" + _host
 _message_part = " :{{message:.*}}"
 
