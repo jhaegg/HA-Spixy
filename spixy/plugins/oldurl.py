@@ -44,7 +44,7 @@ class OldUrlPlugin(Plugin):
             else:
                 score_db[nick] = 1
 
-        else:
+        elif nick != url_db[chan][url][0][0]:
             url_db[chan][url].append((nick, datetime.now()))
             times = len(url_db[chan][url])
             if nick in score_db:
