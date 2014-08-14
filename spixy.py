@@ -6,6 +6,7 @@ from spixy.plugins.decision import DecisionPlugin
 from spixy.plugins.friday import FridayPlugin
 from spixy.plugins.title import TitlePlugin
 from spixy.plugins.oldurl import OldUrlPlugin
+from spixy.plugins.converter import ConverterPlugin
 
 
 class RawSender(Thread):
@@ -41,10 +42,12 @@ if __name__ == '__main__':
     friday = FridayPlugin(config, client)
     title = TitlePlugin(config, client)
     oldurl = OldUrlPlugin(config, client)
+    converter = ConverterPlugin(config, client)
     console.start()
     console.join()
     decision.close()
     friday.close()
     title.close()
     oldurl.close()
+    converter.close
     client.close()
