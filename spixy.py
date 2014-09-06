@@ -49,5 +49,5 @@ if __name__ == '__main__':
     friday.close()
     title.close()
     oldurl.close()
-    converter.close
+    converter.close()
     client.close()
