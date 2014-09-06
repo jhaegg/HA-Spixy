@@ -13,7 +13,7 @@ class TitlePlugin(Plugin):
         self._client = client
         self._pages = {}
         self._titles_fetched = False
-        self._url_match = compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+        self._url_match = compile('https?://[^\s/$.?#].[^\s]*')
         self._title_match = compile('<title>(.+?)</title>', IGNORECASE)
         self._session = FuturesSession(max_workers=5)
 

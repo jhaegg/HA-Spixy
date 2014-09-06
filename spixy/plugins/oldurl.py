@@ -9,7 +9,7 @@ class OldUrlPlugin(Plugin):
     def __init__(self, config, client):
         client.register_listener("PRIVMSG", self._handle_url)
         self._client = client
-        self._regex = re.compile("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+        self._regex = re.compile("https?://[^\s/$.?#].[^\s]*",
                                  re.IGNORECASE)
 
         super(OldUrlPlugin, self).__init__(config)
