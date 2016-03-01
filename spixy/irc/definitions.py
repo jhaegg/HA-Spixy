@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 import spixy.utils.format_parse as format_parse
 
 _host = "{{host:[0-9a-zA-Z\.\-:]+}}"
