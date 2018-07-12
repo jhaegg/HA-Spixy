@@ -47,16 +47,22 @@ class TitlePlugin(Plugin):
                 self._send_title(prefix, target, page, title, multiple)
 
     def _async_send_titles(self, prefix, target, pages, multiple):
-        futures = [self._session.get(page, background_callback=self._title_callback(prefix, target, page, multiple), Stream=True)
+        for page in pages:
+            try:
+                head_request = requests.head(page)
+                if "text" not in head_request.headers['Content-Type']:
+                    self._page = "Error, no title found."
+                    return
+            except:
+                self._page = "Error, no title found."
+                return
+
+        futures = [self._session.get(page, background_callback=self._title_callback(prefix, target, page, multiple))
                    for page in pages]
 
         # Must "join" requests-futures requests for some odd reason.
         for future in futures:
-            if int(future.headers['content-length']) < 5000000:
-                future.result()
-            else:
-                future.close()
-                self._pages[page] = "Error, no title found."
+            future.result()
 
     def _title_callback(self, prefix, target, page, multiple):
         def callback(session, response):
