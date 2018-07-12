@@ -47,7 +47,7 @@ class TitlePlugin(Plugin):
                 self._send_title(prefix, target, page, title, multiple)
 
     def _async_send_titles(self, prefix, target, pages, multiple):
-        futures = [self._session.get(page, background_callback=self._title_callback(prefix, target, page, multiple), timeout=3, stream=True)
+        futures = [self._session.get(page, background_callback=self._title_callback(prefix, target, page, multiple), stream=True)
                    for page in pages]
 
         # Must "join" requests-futures requests for some odd reason.
