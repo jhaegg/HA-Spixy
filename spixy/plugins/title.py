@@ -47,40 +47,38 @@ class TitlePlugin(Plugin):
                 self._send_title(prefix, target, page, title, multiple)
 
     def _async_send_titles(self, prefix, target, pages, multiple):
-        #futures = [self._session.get(page, background_callback=self._title_callback(prefix, target, page, multiple), stream=True)
-        futures = [self._session.get(page, background_callback=self.callback, stream=True)
+        futures = [self._session.get(page, background_callback=self._title_callback(prefix, target, page, multiple), Stream=True)
                    for page in pages]
 
         # Must "join" requests-futures requests for some odd reason.
         for future in futures:
-            future.result()
-
-    #def _title_callback(self, prefix, target, page, multiple):
-    def callback(session, response):
-        try:
-            if int(response.headers['content-length']) < 5000000:
-                response.raise_for_status()
+            if int(future.headers['content-length']) < 5000000:
+                future.result()
             else:
-                response.close()
+                future.close()
                 self._pages[page] = "Error, no title found."
-                return callback
-        except RequestException:
-            self._logger.exception("Got status {status} when retrieving {page}".format(status=response.status_code,
-                                                                                       page=page))
-            self._pages[page] = "Error, status code {status}".format(status=response.status_code)
-            self._send_title(prefix, target, page, self._pages[page], multiple)
-            return
 
-        try:
-            title = self._title_match.search(response.text).group(1)
-            self._pages[page] = unescape(title)
-            self._send_title(prefix, target, page, title, multiple)
-            return
-        except AttributeError:
-            self._pages[page] = "Error, no title found."
-            self._send_title(prefix, target, page, self._pages[page], multiple)
+    def _title_callback(self, prefix, target, page, multiple):
+        def callback(session, response):
+            try:
+                response.raise_for_status()
+            except RequestException:
+                self._logger.exception("Got status {status} when retrieving {page}".format(status=response.status_code,
+                                                                                           page=page))
+                self._pages[page] = "Error, status code {status}".format(status=response.status_code)
+                self._send_title(prefix, target, page, self._pages[page], multiple)
+                return
 
-    return callback
+            try:
+                title = self._title_match.search(response.text).group(1)
+                self._pages[page] = unescape(title)
+                self._send_title(prefix, target, page, title, multiple)
+                return
+            except AttributeError:
+                self._pages[page] = "Error, no title found."
+                self._send_title(prefix, target, page, self._pages[page], multiple)
+
+        return callback
 
     def _send_title(self, prefix, target, page, title, multiple):
         if title is None:
