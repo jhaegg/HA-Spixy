@@ -60,7 +60,9 @@ class TitlePlugin(Plugin):
                 if int(response.headers['content-length']) < 5000000:
                     response.raise_for_status()
                 else:
-                    return
+                    response.close()
+                    self._pages[page] = "Error, no title found."
+                    return callback
             except RequestException:
                 self._logger.exception("Got status {status} when retrieving {page}".format(status=response.status_code,
                                                                                            page=page))
