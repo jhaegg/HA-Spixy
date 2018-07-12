@@ -27,7 +27,7 @@ class Plugin(Thread):
                 self._logger.error("Unknown logging level %s" % self._config['loglevel'])
 
         super(Plugin, self).__init__()
-        filename = self.__class__.__name__ + ".pickle"
+        filename = "config/" + self.__class__.__name__ + ".pickle"
         try:
             with open(filename, 'rb') as f:
                 self._store = load(f)
@@ -63,7 +63,7 @@ class Plugin(Thread):
         raise NotImplemented
 
     def _cleanup(self):
-        filename = self.__class__.__name__ + ".pickle"
+        filename = "config/" + self.__class__.__name__ + ".pickle"
         try:
             with open(filename, 'wb') as f:
                 dump(self._store, f)
