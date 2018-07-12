@@ -2,6 +2,7 @@ from .plugin import Plugin
 
 from re import compile, IGNORECASE
 from html import unescape
+import requests 
 
 from requests_futures.sessions import FuturesSession
 from requests.exceptions import RequestException
