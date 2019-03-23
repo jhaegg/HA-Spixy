@@ -30,7 +30,8 @@ def join_on_connect(config):
 
     return wrapped
 
-if __name__ == '__main__':
+
+def main():
     with open('config/spixy.json') as f:
         config = load(f)
 
@@ -51,3 +52,7 @@ if __name__ == '__main__':
     oldurl.close()
     converter.close()
     client.close()
+
+
+if __name__ == '__main__':
+    main()

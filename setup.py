@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='HA-Spixy',
@@ -13,5 +13,10 @@ setup(
     packages=['spixy'],
     install_requires=[
         'requests-futures'
-    ]
+    ],
+    entry_points={
+        'console_scripts': [
+            'spixy=spixy.main:main'
+        ]
+    }
 )

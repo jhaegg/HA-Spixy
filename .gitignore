@@ -2,6 +2,7 @@
 config/*.json
 
 #Virtualenv
+.env/
 env/
 env.sh
 
