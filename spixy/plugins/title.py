@@ -2,7 +2,7 @@ from .plugin import Plugin
 
 from re import compile, IGNORECASE
 from html import unescape
-import requests 
+import requests
 
 from requests_futures.sessions import FuturesSession
 from requests.exceptions import RequestException
@@ -15,7 +15,7 @@ class TitlePlugin(Plugin):
         self._pages = {}
         self._titles_fetched = False
         self._url_match = compile('https?://[^\s/$.?#].[^\s]*')
-        self._title_match = compile('<title>(.+?)</title>', IGNORECASE)
+        self._title_match = compile('<title>(.+)<\/title>', IGNORECASE | MULTILINE | UNICODE)
         self._session = FuturesSession(max_workers=5)
 
         super(TitlePlugin, self).__init__(config)
@@ -48,7 +48,7 @@ class TitlePlugin(Plugin):
                 self._send_title(prefix, target, page, title, multiple)
 
     def _async_send_titles(self, prefix, target, pages, multiple):
-        headers = {'User-Agent': 'Mozilla/6.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36'}
+        headers = {'User-Agent': 'Spixy IRC Bot'}
         for page in pages:
             try:
                 head_request = requests.head(page, headers=headers)
