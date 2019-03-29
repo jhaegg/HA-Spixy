@@ -1,117 +1,133 @@
+import asyncio
+import logging
+
 from codecs import getdecoder
-from curses import ascii
-from threading import Thread
-from logging import getLogger
-import socket
-from time import sleep
 
 from spixy.irc.definitions import valid_event, parse, events
 
 
-logger = getLogger(__name__)
-
-__all__ = ['Client']
-
-
-class EventHandler(Thread):
-    def __init__(self, client):
-        Thread.__init__(self)
-        self.client = client
-        self.shutdown = False
-
-    def run(self):
-        utf8decoder = getdecoder('utf-8')
-        latin1decoder = getdecoder('latin-1')
-
-        while (not self.shutdown):
-            data = self.client.socket.recv(4096)
-            datalen = len(data)
-            if datalen > 0:
-                try:
-                    (message, decoded) = utf8decoder(data)
-                except (UnicodeDecodeError, UnicodeTranslateError):
-                    (message, decoded) = latin1decoder(data)
-
-                if datalen != decoded:
-                    logger.warning('Not all bytes decoded: %r' % data)
-
-                for line in [l.strip() for l in message.split('\n') if l]:
-                    event, parameters = parse(line)
-
-                    if event is None:
-                        logger.error("Could not parse %r" % line)
-                    else:
-                        for listener in self.client.listeners[event]:
-                            try:
-                                listener(**parameters)
-                            except:
-                                logger.exception("Uncaught exception in event listener on message:\n%s" % line)
-            else:
-                sleep(0.5)
-
-
-    def close(self):
-        self.shutdown = True
-
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.ERROR)
+_ch = logging.StreamHandler()
+_ch.setLevel(logging.ERROR)
+_ch.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(_ch)
 
 class Client():
     def __init__(self, host, port, user, nick, name):
-        self.host = host
-        self.port = port
-        self.user = user
-        self.nick = nick
-        self.name = name
-        self.listeners = {event: [] for event in events}
+        self._host = host
+        self._port = port
+        self._user = user
+        self._nick = nick
+        self._name = name
+        self._decoders = [getdecoder('utf-8'), getdecoder('latin-1')]
 
-    def __repr__(self):
-        return 'Client(host=%s, port=%d, user=%s)' % (self.host, self.port, self.user)
-
-    def connect(self):
-        self.register_listener('PING', self._pong)
-        self.register_listener('SERVER_NOTICE', self._auth_login)
-        self.register_listener('BLANK_NOTICE', self._auth_login)
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((self.host, self.port))
-        self.event_handler = EventHandler(self)
-        self.event_handler.start()
-
-    def close(self):
-        if hasattr(self, 'socket'):
-            self._send_raw('QUIT :Exiting')
-            self.socket.close()
-
-        if hasattr(self, 'event_handler'):
-            self.event_handler.close()
-            self.event_handler.join()
+        self._listeners = {event: [] for event in events}
 
     def register_listener(self, event, listener):
         if valid_event(event):
-            self.listeners[event].append(listener)
+            self._listeners[event].append(listener)
         else:
             raise TypeError('Invalid IRC event %s.' % event)
 
     def remove_listener(self, event, listener):
         if valid_event(event):
-            self.listeners[event].remove(listener)
+            self._listeners[event].remove(listener)
         else:
             raise TypeError('Invalid IRC event %s.' % event)
 
-    def _send_raw(self, string):
-        self.socket.sendall(str.encode('%s\r\n' % string))
+    def run(self):
+        loop = asyncio.get_event_loop()
+        try:
+            loop.run_until_complete(self._run())
+        except KeyboardInterrupt:
+            loop.run_until_complete(self._close())
+
+        loop.close()
 
     # IRC messages
+    async def privmsg(self, target, message):
+        await self._send_raw("PRIVMSG {target} :{message}".format(target=target, message=message))
 
-    def privmsg(self, target, message):
-        self._send_raw("PRIVMSG {target} :{message}".format(target=target, message=message))
+    # Internals
+    def __repr__(self):
+        return 'Client(host=%s, port=%d, user=%s)' % (self._host, self._port, self._user)
+
+    async def _connect(self):
+        if len(self._listeners['PING']) == 0:
+            self.register_listener('PING', self._pong)
+
+        self.register_listener('SERVER_NOTICE', self._auth_login)
+        self.register_listener('BLANK_NOTICE', self._auth_login)
+
+        self._reader, self._writer = await asyncio.open_connection(self._host, self._port)
+
+    async def _read_line(self):
+        line = await self._reader.readline()
+        message = self._decode(line)
+        return message
+
+    def _decode(self, line):
+        for decoder in self._decoders:
+            try:
+                (message, decoded_len) = decoder(line)
+            except ValueError:
+                pass
+
+            if len(line) != decoded_len:
+                logger.warning('Not all bytes decoded: %r' % data)
+
+            return message.strip()
+
+        raise RuntimeError("Failed to decode message")
+
+    async def _close(self):
+        if hasattr(self, '_reader'):
+            await self._send_raw('QUIT :Exiting')
+            self._writer.close()
+            await self._writer.wait_closed()
+
+    async def _send_raw(self, string):
+        logger.debug("Sending line %s" % string)
+        self._writer.write(str.encode('%s\r\n' % string))
+        await self._writer.drain()
+
+    # Event loop
+    async def _run(self):
+        await self._connect()
+        tasks = set()
+        reader = asyncio.create_task(self._read_line())
+        tasks.add(reader)
+        while True:
+            done, tasks = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+            for task in done:
+                exception = task.exception()
+                if exception is not None:
+                    if task is reader:
+                        raise exception
+                    else:
+                        logger.error("Error in event listener", exc_info=exception)
+
+                if task is reader:
+                    line = reader.result()
+                    reader = asyncio.create_task(self._read_line())
+                    tasks.add(reader)
+                    event, parameters = parse(line)
+                    if event is None:
+                        logger.warning("Could not parse %r" % line)
+                    else:
+                        logger.debug("Got event %s with parameters %r" % (event, parameters))
+                        for listener in self._listeners[event]:
+                            tasks.add(listener(**parameters))
+                        logger.debug("Called %d listeners" % len(self._listeners[event]))
 
     # Default event handlers
+    async def _pong(self, timestamp):
+        await self._send_raw('PONG %s' % timestamp)
 
-    def _pong(self, timestamp):
-        self._send_raw('PONG %s' % timestamp)
-
-    def _auth_login(self, target, **kwargs):
+    async def _auth_login(self, target, **kwargs):
         if target == 'AUTH':
-            self._send_raw('NICK %s' % self.nick)
-            self._send_raw('USER %s 0 * :%s' % (self.user, self.name))
+            await self._send_raw('NICK %s' % self._nick)
+            await self._send_raw('USER %s 0 * :%s' % (self._user, self._name))
             self.remove_listener('SERVER_NOTICE', self._auth_login)
             self.remove_listener('BLANK_NOTICE', self._auth_login)
