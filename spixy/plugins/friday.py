@@ -1,5 +1,7 @@
 from datetime import date
 
+from .util import chan_or_user
+
 
 class FridayPlugin():
     def __init__(self, config, client):
@@ -9,11 +11,8 @@ class FridayPlugin():
 
     async def _handle_friday(self, message, nick, target, **rest):
         if message.startswith(self._config['trigger']):
-            if target.startswith("#"):
-                message = "{nick}: {response}".format(response=self._get_response(), target=target)
-                await self._client.privmsg(target=target, message=message)
-            else:
-                await self._client.privmsg(target=nick, message=self._get_response())
+            response = self._get_response()
+            await self._client.privmsg(**chan_or_user(response, nick, target))
 
     def _get_response(self):
         today = date.today().strftime('%A')

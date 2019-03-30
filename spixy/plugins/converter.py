@@ -1,5 +1,7 @@
 import re
 
+from .util import chan_or_user
+
 
 class ConverterPlugin():
     def __init__(self, config, client):
@@ -10,11 +12,8 @@ class ConverterPlugin():
 
     async def _handle_conversion(self, message, nick, target, **rest):
         if message.startswith(self._config['trigger']):
-            if target.startswith("#"):
-                message = "{nick}: {response}".format(response=self._get_response(message), nick=nick)
-                await self._client.privmsg(target=target, message=message)
-            else:
-                await self._client.privmsg(target=nick, message=self._get_response(message))
+            response = self._get_response(message)
+            await self._client.privmsg(**chan_or_user(response, nick, target))
 
     def _get_response(self, message):
         matches = self._pattern.findall(message)
