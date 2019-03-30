@@ -1,100 +1,49 @@
-from .plugin import Plugin
-
-from re import compile, IGNORECASE
+import asyncio
 from html import unescape
-import requests
+from re import compile, IGNORECASE, MULTILINE, UNICODE
 
-from requests_futures.sessions import FuturesSession
-from requests.exceptions import RequestException
+from aiohttp import request
+
+from .util import chan_or_user
 
 
-class TitlePlugin(Plugin):
+class TitlePlugin():
     def __init__(self, config, client):
         client.register_listener("PRIVMSG", self._handle_title)
         self._client = client
-        self._pages = {}
-        self._titles_fetched = False
+        self._config = config
+        self._titles = []
         self._url_match = compile('https?://[^\s/$.?#].[^\s]*')
         self._title_match = compile('<title>(.+)<\/title>', IGNORECASE | MULTILINE | UNICODE)
-        self._session = FuturesSession(max_workers=5)
 
-        super(TitlePlugin, self).__init__(config)
-
-    def _handle_title(self, nick, target, message, **rest):
+    async def _handle_title(self, message, nick, target, **rest):
         pages = self._url_match.findall(message)
         if pages:
-            self._pages = {page: None for page in pages}
-            self._titles_fetched = False
+            self._titles = await asyncio.gather(*(self._load_page(page) for page in pages))
 
         if message.startswith(self._config['trigger']):
-            if self._pages:
-                self.send_command(nick=nick, target=target)
+            if len(self._titles) > 1:
+                fmt = "{page} - {title}"
+            else:
+                fmt = "{title}"
 
-    def _handle_command(self, command):
-        if command['target'].startswith("#"):
-            prefix = "{nick}: ".format(**command)
-            target = command['target']
-        else:
-            prefix = ""
-            target = command['nick']
+            for page, title in self._titles:
+                response = fmt.format(page=page, title=title)
+                await self._client.privmsg(**chan_or_user(response, nick, target))
 
-        multiple = len(self._pages) > 1
+    async def _load_page(self, page):
+        headers = self._config['headers']
+        try:
+            async with request('HEAD', page, headers=headers) as head_response:
+                head_response.raise_for_status()
+                if "text" not in head_response.headers['Content-Type']:
+                    return page, "Error, no title found."
 
-        if not self._titles_fetched:
-            self._async_send_titles(prefix, target, self._pages.keys(), multiple)
-            self._titles_fetched = True
-        else:
-            for page, title in self._pages.items():
-                self._send_title(prefix, target, page, title, multiple)
-
-    def _async_send_titles(self, prefix, target, pages, multiple):
-        headers = {'User-Agent': 'Spixy IRC Bot'}
-        for page in pages:
-            try:
-                head_request = requests.head(page, headers=headers)
-                if "text" not in head_request.headers['Content-Type']:
-                    self._page = "Error, no title found."
-                    return
-            except:
-                self._page = "Error, no title found."
-                return
-
-        futures = [self._session.get(page, background_callback=self._title_callback(prefix, target, page, multiple), headers=headers)
-                   for page in pages]
-
-        # Must "join" requests-futures requests for some odd reason.
-        for future in futures:
-            future.result()
-
-    def _title_callback(self, prefix, target, page, multiple):
-        def callback(session, response):
-            try:
+            async with request('GET', page, headers=headers) as response:
                 response.raise_for_status()
-            except RequestException:
-                self._logger.exception("Got status {status} when retrieving {page}".format(status=response.status_code,
-                                                                                           page=page))
-                self._pages[page] = "Error, status code {status}".format(status=response.status_code)
-                self._send_title(prefix, target, page, self._pages[page], multiple)
-                return
+                text = await response.text()
 
-            try:
-                title = self._title_match.search(response.text).group(1)
-                self._pages[page] = unescape(title)
-                self._send_title(prefix, target, page, title, multiple)
-                return
-            except AttributeError:
-                self._pages[page] = "Error, no title found."
-                self._send_title(prefix, target, page, self._pages[page], multiple)
-
-        return callback
-
-    def _send_title(self, prefix, target, page, title, multiple):
-        if title is None:
-            return
-
-        if multiple:
-            message = "{prefix}{page} - {title}".format(prefix=prefix, page=page, title=title)
-        else:
-            message = "{prefix}{title}".format(prefix=prefix, title=title)
-
-        self._client.privmsg(target, message)
+            title = self._title_match.search(text).group(1)
+            return page, unescape(title)
+        except:
+            return page, "Error, no title found."

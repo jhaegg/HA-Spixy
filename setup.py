@@ -12,7 +12,9 @@ setup(
     url='https://github.com/jhaegg/HA-Spixy',
     packages=['spixy'],
     install_requires=[
-        'requests-futures'
+        'aiohttp',
+        'aiodns',
+        'cchardet'
     ],
     entry_points={
         'console_scripts': [
