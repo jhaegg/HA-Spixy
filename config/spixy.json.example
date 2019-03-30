@@ -6,6 +6,14 @@
         "nick": "HA-Spixy",
         "name": "High Availibility Spixy"
     },
+    "plugins": [
+        {
+            "module": "spixy.plugins.friday:FridayPlugin",
+            "config": {
+                "trigger": "%isitfriday"
+            }
+        }
+    ],
 	"autojoin": ["#example", "#chan"],
 	"DecisionPlugin": {
 	    "trigger": "%d",
