@@ -1,31 +1,23 @@
 from random import choice
 
-from .plugin import Plugin
+from .util import chan_or_user
 
 
-class DecisionPlugin(Plugin):
+class DecisionPlugin():
     def __init__(self, config, client):
         client.register_listener("PRIVMSG", self._handle_decision)
         self._client = client
-        super(DecisionPlugin, self).__init__(config)
+        self._config = config
 
-    def _handle_decision(self, nick, target, message, **rest):
+    async def _handle_decision(self, message, nick, target, **rest):
         if message.startswith(self._config['trigger'] + " "):
-            self.send_command(nick=nick, target=target, message=message)
+            choices = self._partition(message)
+            if len(choices) == 1:
+                response = choice(self._config['choices'])
+            else:
+                response = choice(choices)
 
-    def _handle_command(self, command):
-        choices = self._partition(command['message'])
-
-        if len(choices) == 1:
-            answer = choice(self._config['choices'])
-        else:
-            answer = choice(choices)
-
-        if command['target'].startswith("#"):
-            self._client.privmsg(target=command['target'],
-                                 message="{nick}: {answer}".format(answer=answer, **command))
-        else:
-            self._client.privmsg(target=command['nick'], message=answer)
+            await self._client.privmsg(**chan_or_user(response, nick, target))
 
     def _partition(self, message):
         if self._config['indicator'] not in message:

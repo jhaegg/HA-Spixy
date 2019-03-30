@@ -18,15 +18,19 @@
             "config": {
                 "trigger": "%bin"
             }
+        },
+        {
+            "module": "spixy.plugins.decision:DecisionPlugin",
+            "config": {
+                "trigger": "%d",
+                "choices": ["Yes", "No"],
+                "indicator": " or ",
+                "separators": [",", " or "]
+            }
         }
+
     ],
 	"autojoin": ["#example", "#chan"],
-	"DecisionPlugin": {
-	    "trigger": "%d",
-	    "choices": ["Yes", "No"],
-	    "indicator": " or ",
-	    "separators": [",", " or "]
-	},
     "FridayPlugin": {
         "trigger": "%isitfriday?"
     },
