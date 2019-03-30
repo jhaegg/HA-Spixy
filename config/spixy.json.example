@@ -12,6 +12,12 @@
             "config": {
                 "trigger": "%isitfriday"
             }
+        },
+        {
+            "module": "spixy.plugins.converter:ConverterPlugin",
+            "config": {
+                "trigger": "%bin"
+            }
         }
     ],
 	"autojoin": ["#example", "#chan"],
