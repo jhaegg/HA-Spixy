@@ -43,8 +43,12 @@
             "config": {
                 "format": "{nick}: {url} has been posted {times} times, your score is: {score}"
             }
+        },
+        {
+            "module": "spixy.plugins.autojoin:AutoJoinPlugin",
+            "config": {
+                "channels": ["#example", "#chan"]
+            }
         }
-
     ],
-	"autojoin": ["#example", "#chan"]
 }
