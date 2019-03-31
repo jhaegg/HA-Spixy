@@ -1,5 +1,6 @@
 # None-example configuration files
 config/*.json
+config/*.db
 
 #Virtualenv
 .env/

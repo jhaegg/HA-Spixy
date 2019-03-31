@@ -14,7 +14,9 @@ setup(
     install_requires=[
         'aiohttp',
         'aiodns',
-        'cchardet'
+        'aiosqlite',
+        'cchardet',
+        'pypika'
     ],
     entry_points={
         'console_scripts': [
