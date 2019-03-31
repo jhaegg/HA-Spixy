@@ -15,7 +15,7 @@ class OldUrlPlugin():
         self._db = db
         self._builder = builder
         self._db_initialized = False
-        self._regex = re.compile("https?://[^\s/$.?#].[^\s]*", re.IGNORECASE)
+        self._regex = re.compile(r"https?://[^\s/$.?#].[^\s]*", re.IGNORECASE)
 
     async def _handle_url(self, nick, target, message, **rest):
         await self._init_db()

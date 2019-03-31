@@ -13,6 +13,7 @@ _ch.setLevel(logging.ERROR)
 _ch.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 logger.addHandler(_ch)
 
+
 class Client():
     def __init__(self, host, port, user, nick, name):
         self._host = host
@@ -75,7 +76,7 @@ class Client():
                 pass
 
             if len(line) != decoded_len:
-                logger.warning('Not all bytes decoded: %r' % data)
+                logger.warning('Not all bytes decoded: %r' % line)
 
             return message.strip()
 

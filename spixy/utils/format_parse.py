@@ -1,7 +1,8 @@
 import re
 from .key_default_dict import KeyDefaultDict
 
-_format_pattern = "(\{\{([A-Za-z0-9]+):(.+?(?=\}\}))\}\})"
+_format_pattern = r"(\{\{([A-Za-z0-9]+):(.+?(?=\}\}))\}\})"
+
 
 # TODO: Implement type support
 def _build_format(format):

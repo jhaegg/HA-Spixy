@@ -13,8 +13,8 @@ class TitlePlugin():
         self._client = client
         self._config = config
         self._titles = []
-        self._url_match = compile('https?://[^\s/$.?#].[^\s]*')
-        self._title_match = compile('<title>(.+)<\/title>', IGNORECASE | MULTILINE | UNICODE)
+        self._url_match = compile(r'https?://[^\s/$.?#].[^\s]*')
+        self._title_match = compile(r'<title>(.+)<\/title>', IGNORECASE | MULTILINE | UNICODE)
 
     async def _handle_title(self, message, nick, target, **rest):
         pages = self._url_match.findall(message)
@@ -45,5 +45,5 @@ class TitlePlugin():
 
             title = self._title_match.search(text).group(1)
             return page, unescape(title)
-        except:
+        except Exception:
             return page, "Error, no title found."
